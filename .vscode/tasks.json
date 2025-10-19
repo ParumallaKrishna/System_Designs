@@ -1,0 +1,26 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build Uber System",
+      "type": "shell",
+      "command": "mvn clean install",
+      "group": "build",
+      "problemMatcher": ["$javac"]
+    },
+    {
+      "label": "Run userService",
+      "type": "shell",
+      "command": "mvn spring-boot:run -pl userService",
+      "group": "test",
+      "problemMatcher": ["$javac"]
+    },
+    {
+      "label": "Run driverService",
+      "type": "shell",
+      "command": "mvn spring-boot:run -pl driverService",
+      "group": "test",
+      "problemMatcher": ["$javac"]
+    }
+  ]
+}
