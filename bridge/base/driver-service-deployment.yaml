@@ -1,0 +1,45 @@
+#! driver-service-deployment.yaml
+# Generated code, do not edit
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: driver-service
+    namespace: ubersystem
+    labels:
+        com.docker.compose.project: ubersystem
+        com.docker.compose.service: driver-service
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            com.docker.compose.project: ubersystem
+            com.docker.compose.service: driver-service
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                com.docker.compose.project: ubersystem
+                com.docker.compose.service: driver-service
+                com.docker.compose.network.uber-net: "true"
+        spec:
+            containers:
+                - name: driver-service
+                  image: ubersystem-driver-service
+                  imagePullPolicy: IfNotPresent
+                  env:
+                    - name: DB_PASSWORD
+                      value: "Hari@123"
+                    - name: DB_USERNAME
+                      value: "root"
+                    - name: SERVER_PORT
+                      value: "8080"
+                    - name: SPRING_DATASOURCE_URL
+                      value: "jdbc:mysql://mysql-db:3306/uber_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+                    - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+                      value: "kafka:9092"
+                  ports:
+                    - name: driver-ser-8081
+                      containerPort: 8081
+                    - name: driver-ser-8080
+                      containerPort: 8080

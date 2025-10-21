@@ -1,0 +1,11 @@
+#! mysql-db-service.yaml
+# Generated code, do not edit
+apiVersion: v1
+kind: Service
+metadata:
+    name: mysql-db-published
+    namespace: ubersystem
+spec:
+    type: LoadBalancer
+
+# check if there is at least one published port
