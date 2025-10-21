@@ -1,0 +1,45 @@
+#! user-service-deployment.yaml
+# Generated code, do not edit
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: user-service
+    namespace: ubersystem
+    labels:
+        com.docker.compose.project: ubersystem
+        com.docker.compose.service: user-service
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            com.docker.compose.project: ubersystem
+            com.docker.compose.service: user-service
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                com.docker.compose.project: ubersystem
+                com.docker.compose.service: user-service
+                com.docker.compose.network.uber-net: "true"
+        spec:
+            containers:
+                - name: user-service
+                  image: ubersystem-user-service
+                  imagePullPolicy: IfNotPresent
+                  env:
+                    - name: DB_PASSWORD
+                      value: "Hari@123"
+                    - name: DB_USERNAME
+                      value: "root"
+                    - name: GOOGLE_API_KEY
+                      value: "AIzaSyA1P_AY0hSJVcPd5PNkoDuas0nmsK7ocTI"
+                    - name: SERVER_PORT
+                      value: "8081"
+                    - name: SPRING_DATASOURCE_URL
+                      value: "jdbc:mysql://mysql-db:3306/uber_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+                    - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+                      value: "kafka:9092"
+                  ports:
+                    - name: user-servi-8081
+                      containerPort: 8081

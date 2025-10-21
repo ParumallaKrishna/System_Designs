@@ -1,0 +1,109 @@
+
+
+services:
+  # ================================
+  # MySQL Database
+  # ================================
+  # mysql-db:
+  #   image: mysql:8.3
+  #   container_name: mysql-db
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: Hari@123
+  #     MYSQL_DATABASE: uber_db
+  #   ports:
+  #     - "3307:3306"
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
+  #   networks:
+  #     - uber-net
+
+  # ================================
+  # Zookeeper (Kafka dependency)
+  # ================================
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - uber-net
+
+  # ================================
+  # Kafka
+  # ================================
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - uber-net
+
+  # ================================
+  # User Service
+  # ================================
+  # user-service:
+  #   build:
+  #     context: .
+  #     dockerfile: userService/Dockerfile
+  #   container_name: user-service
+  #   depends_on:
+  #     - mysql-db
+  #     - kafka
+  #   ports:
+  #     - "8081:8081"
+  #   environment:
+  #     SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/uber_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+  #     DB_USERNAME: root
+  #     DB_PASSWORD: Hari@123
+  #     SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  #     GOOGLE_API_KEY: ${GOOGLE_API_KEY:-dummy-key}
+  #     SERVER_PORT: 8081
+  #   networks:
+  #     - uber-net
+
+  # # ================================
+  # # Driver Service
+  # # ================================
+  # driver-service:
+  #   build:
+  #     context: .
+  #     dockerfile: driverService/Dockerfile
+  #   container_name: driver-service
+  #   depends_on:
+  #     - mysql-db
+  #     - kafka
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/uber_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+  #     DB_USERNAME: root
+  #     DB_PASSWORD: Hari@123
+  #     SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  #     SERVER_PORT: 8080
+  #   networks:
+  #     - uber-net
+
+# ================================
+# Volumes & Networks
+# ================================
+volumes:
+  mysql_data:
+
+networks:
+  uber-net:
+    driver: bridge

@@ -1,0 +1,12 @@
+<div *ngIf="rideRequest; else waiting">
+  <h3>🚖 New Ride Request!</h3>
+  <p><strong>Ride ID:</strong> {{ rideRequest.rideId }}</p>
+  <p><strong>Pickup:</strong> {{ rideRequest.originLat }}, {{ rideRequest.originLng }}</p>
+  <p><strong>Drop:</strong> {{ rideRequest.destLat }}, {{ rideRequest.destLng }}</p>
+
+  <button (click)="acceptRide()">✅ Accept</button>
+</div>
+
+<ng-template #waiting>
+  <p>No ride requests right now...</p>
+</ng-template>

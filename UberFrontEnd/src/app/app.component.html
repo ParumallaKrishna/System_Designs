@@ -1,0 +1,55 @@
+<!-- src/app/rider-dashboard/rider-dashboard.component.html -->
+<div class="page">
+  <div class="map">
+    <google-map #map [height]="'100%'" [width]="'100%'" [center]="center" [zoom]="zoom" [options]="mapOptions"></google-map>
+  </div>
+
+  <div class="panel" [class.closed]="!panelOpen">
+    <div class="panel-header">
+      <h2>Book a Ride</h2>
+      <button class="icon" (click)="togglePanel()">{{ panelOpen ? '⟨' : '⟩' }}</button>
+    </div>
+
+    <form [formGroup]="form" class="form">
+      <label>Pickup</label>
+      <input #pickupInput type="text" formControlName="pickup" placeholder="Search pickup address">
+      <label>Dropoff</label>
+      <input #dropInput type="text" formControlName="dropoff" placeholder="Search drop address">
+
+      <div class="actions">
+        <button type="button" class="secondary" (click)="clearRoute()">Clear</button>
+        <button type="button" class="primary" [disabled]="!pickupCoord || !dropCoord" (click)="getQuoteFromBackend()">Get Quote</button>
+      </div>
+    </form>
+
+    <div class="quote" *ngIf="quote">
+      <div class="row"><span>Distance:</span><strong>{{ quote.distanceKm | number:'1.1-1' }} km</strong></div>
+      <div class="row"><span>ETA:</span><strong>{{ quote.durationMin | number:'1.0-0' }} min</strong></div>
+      <div class="row total"><span>Estimated Fare:</span><strong>₹ {{ quote.estimatedFare | number:'1.0-0' }}</strong></div>
+      <button class="primary wide" (click)="confirmRide()" [disabled]="confirming">{{ confirming ? 'Confirming…' : 'Confirm Ride' }}</button>
+      <p class="muted">Fare shown is an estimate. Final fare may vary with traffic & route.</p>
+    </div>
+
+    <div class="drivers" *ngIf="nearbyDrivers?.length">
+      <h3>Available Drivers ({{ nearbyDrivers.length }})</h3>
+      <div class="driver" *ngFor="let d of nearbyDrivers">
+        <div class="avatar">{{ d.name[0] }}</div>
+        <div class="info">
+          <div class="name">{{ d.name }}</div>
+          <div class="meta">{{ d.vehicleType }} • ★ {{ d.rating | number:'1.1-1' }}</div>
+        </div>
+        <div class="right" *ngIf="d.distanceKm != null">{{ d.distanceKm | number:'1.1-1' }} km</div>
+      </div>
+    </div>
+
+    <div class="confirmation" *ngIf="confirmation">
+      <h3 *ngIf="confirmation.status === 'CONFIRMED'">Ride Confirmed!</h3>
+      <h3 *ngIf="confirmation.status === 'NO_DRIVERS'">No Drivers Available</h3>
+      <div *ngIf="confirmation.status === 'CONFIRMED'">
+        <p>Ride ID: <strong>#{{ confirmation.rideId }}</strong></p>
+        <p>Driver: <strong>{{ confirmation.driver.name }}</strong> • {{ confirmation.driver.vehicleType }}</p>
+        <p>ETA: <strong>{{ confirmation.etaMin }} min</strong> • Fare: <strong>₹ {{ confirmation.estimatedFare }}</strong></p>
+      </div>
+    </div>
+  </div>
+</div>

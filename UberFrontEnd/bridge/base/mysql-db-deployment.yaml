@@ -1,0 +1,46 @@
+#! mysql-db-deployment.yaml
+# Generated code, do not edit
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: mysql-db
+    namespace: ubersystem
+    labels:
+        com.docker.compose.project: ubersystem
+        com.docker.compose.service: mysql-db
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            com.docker.compose.project: ubersystem
+            com.docker.compose.service: mysql-db
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                com.docker.compose.project: ubersystem
+                com.docker.compose.service: mysql-db
+                com.docker.compose.network.uber-net: "true"
+        spec:
+            containers:
+                - name: mysql-db
+                  image: mysql:8.3
+                  imagePullPolicy: IfNotPresent
+                  env:
+                    - name: MYSQL_DATABASE
+                      value: "uber_db"
+                    - name: MYSQL_ROOT_PASSWORD
+                      value: "Hari@123"
+                  ports:
+                    - name: mysql-db-3306
+                      containerPort: 3306
+                    - name: mysql-db-33060
+                      containerPort: 33060
+                  volumeMounts:
+                    - name: var-lib-mysql
+                      mountPath: /var/lib/mysql
+            volumes:
+                - name: var-lib-mysql
+                  persistentVolumeClaim:
+                    claimName: mysql-db-mysql-data
