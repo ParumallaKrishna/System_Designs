@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../Uber System"
+		},
+		{
+			"path": "../uber-ui-latest"
+		}
+	],
+	"settings": {
+		"java.configuration.updateBuildConfiguration": "interactive"
+	}
+}
